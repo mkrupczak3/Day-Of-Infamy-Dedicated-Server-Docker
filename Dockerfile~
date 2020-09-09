@@ -1,8 +1,7 @@
 # escape=`
-FROM lacledeslan/steamcmd:linux as doi-builder
+FROM lacledeslan/steamcmd:linux as csgo-builder
 
-
-ARG contentServer=false
+ARG contentServer=content.lacledeslan.net
 ARG SKIP_STEAMCMD=false
 
 # Copy in local cache files (if any)
@@ -12,9 +11,9 @@ COPY ./.steamcmd-cache/linux /output
 RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
         echo "\n\nSkipping SteamCMD install -- using only contents from steamcmd-cache\n\n"; `
     else `
-        echo "\n\nDownloading Day of Infamy via SteamCMD"; `
+        echo "\n\nDownloading Counter-Strike: Global Offensive via SteamCMD"; `
         mkdir --parents /output; `
-        /app/steamcmd.sh +login anonymous +force_install_dir /output +app_update 462310 validate +quit; `
+        /app/steamcmd.sh +login anonymous +force_install_dir /output +app_update 740 validate +quit; `
     fi;
 
 RUN if [ "$contentServer" = false ] ; then `
@@ -47,29 +46,28 @@ RUN dpkg --add-architecture i386 &&`
 
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-LABEL maintainer="mkrupczak <t3l3tubie@gmail.com>" `
+LABEL maintainer="Laclede's LAN <contact @lacledeslan.com>" `
       com.lacledeslan.build-node=$BUILDNODE `
       org.label-schema.schema-version="1.0" `
       org.label-schema.url="https://github.com/LacledesLAN/README.1ST" `
       org.label-schema.vcs-ref=$SOURCE_COMMIT `
-      org.label-schema.vendor="Matts Bytes" `
-      org.label-schema.description="Day of Infamy Dedicated Server" `
-      org.label-schema.vcs-url="https://github.com/mkrupczak3/day-of-infamy-dedicated"
+      org.label-schema.vendor="Laclede's LAN" `
+      org.label-schema.description="Counter-Strike: Global Offensive Dedicated Server" `
+      org.label-schema.vcs-url="https://github.com/LacledesLAN/gamesvr-csgo"
 
 # Set up Enviornment
-RUN useradd --home /app --gid root --system DOI &&`
+RUN useradd --home /app --gid root --system CSGO &&`
     mkdir -p /app/ll-tests &&`
-    chown DOI:root -R /app;
+    chown CSGO:root -R /app;
 
 # `RUN true` lines are work around for https://github.com/moby/moby/issues/36573
-COPY --chown=DOI:root --from=csgo-builder /output /app
-# this angers me (Matt)
+COPY --chown=CSGO:root --from=csgo-builder /output /app
 RUN true
 
-COPY --chown=DOI:root ./dist/linux/ll-tests /app/ll-tests
+COPY --chown=CSGO:root ./dist/linux/ll-tests /app/ll-tests
 RUN chmod +x /app/ll-tests/*.sh;
 
-USER DOI
+USER CSGO
 
 RUN echo $'\n\nLinking steamclient.so to prevent srcds_run errors' &&`
         mkdir --parents /app/.steam/sdk32 &&`
