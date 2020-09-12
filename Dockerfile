@@ -1,14 +1,17 @@
-# escape=`
-FROM lacledeslan/steamcmd:linux as doi-builder
+FROM lacledeslan/steamcmd:linux as day-of-infamy-dedicated
 
 
 ARG contentServer=false
 ARG SKIP_STEAMCMD=false
 
-# Copy in local cache files (if any)
-COPY ./.steamcmd-cache/linux /output
+# # Copy in local cache files (if any)
+# # Why can't anything in my life work the way it's supposed to?
+# #
+# # https://github.com/search?q=COPY+.%2F.steamcmd-cache%2Flinux+%2Foutput&type=code
+# #
+# COPY --chown=SteamCMD:root ./.steamcmd-cache/linux /output
 
-# Download CSGO via SteamCMD
+# Download DOI via SteamCMD
 RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
         echo "\n\nSkipping SteamCMD install -- using only contents from steamcmd-cache\n\n"; `
     else `
@@ -19,16 +22,6 @@ RUN if [ "$SKIP_STEAMCMD" = true ] ; then `
 
 RUN if [ "$contentServer" = false ] ; then `
         echo "\n\nSkipping custom LL content\n\n"; `
-    else `
-        echo "\nDownloading custom LL content from $contentServer" &&`
-                mkdir --parents /tmp/maps/ /output &&`
-                cd /tmp/maps/ &&`
-                wget -rkpN -l 1 -nH  --no-verbose --cut-dirs=3 -R "*.htm*" -e robots=off "http://"$contentServer"/fastDownloads/csgo/maps/" &&`
-            echo "Decompressing files" &&`
-                bzip2 --decompress /tmp/maps/*.bz2 &&`
-            echo "Moving uncompressed files to destination" &&`
-                mkdir --parents /output/csgo/maps/ &&`
-                mv --no-clobber *.bsp *.nav /output/csgo/maps/; `
     fi;
 
 #=======================================================================`
@@ -37,11 +30,12 @@ FROM debian:stable-slim
 ARG BUILDNODE=unspecified
 ARG SOURCE_COMMIT=unspecified
 
+# :(
 HEALTHCHECK NONE
 
 RUN dpkg --add-architecture i386 &&`
     apt-get update && apt-get install -y `
-        ca-certificates lib32gcc1 libstdc++6 libstdc++6:i386 locales locales-all tmux &&`
+        ca-certificates lib32gcc1 lib32stdc++6 libstdc++6 libstdc++6:i386 locales locales-all tmux &&`
     apt-get clean &&`
     rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*;
 
@@ -62,7 +56,7 @@ RUN useradd --home /app --gid root --system DOI &&`
     chown DOI:root -R /app;
 
 # `RUN true` lines are work around for https://github.com/moby/moby/issues/36573
-COPY --chown=DOI:root --from=csgo-builder /output /app
+COPY --chown=DOI:root --from=day-of-infamy-dedicated /output /app
 # this angers me (Matt)
 RUN true
 

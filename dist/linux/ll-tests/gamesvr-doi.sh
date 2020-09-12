@@ -2,8 +2,8 @@
 
 #####################################################################################################
 ### CONFIG VARS #####################################################################################
-declare LLTEST_CMD="/app/srcds_run -game csgo +game_type 0 +game_mode 1 +map poolday -insecure -tickrate 128 -norestart +sv_lan 1";
-declare LLTEST_NAME="gamesvr-csgo-$(date '+%H%M%S')";
+declare LLTEST_CMD="/app/srcds_run -game doi +game_type 0 +game_mode 1 +map bastogne -insecure -tickrate 128 -norestart +sv_lan 1";
+declare LLTEST_NAME="gamesvr-doi-$(date '+%H%M%S')";
 #####################################################################################################
 #####################################################################################################
 
@@ -145,11 +145,13 @@ fi;
 
 #####################################################################################################
 ### TESTS ###########################################################################################
-# Stock CSGO server tests
+# Stock DOI server tests
+# @TODO change this to APPID 462310
 should_have 'Setting breakpad minidump AppID = 740' 'Sever started executing';
 should_lack 'Server restart in 10 seconds' 'Server is not boot-looping';
 should_lack 'Running the dedicated server as root' 'Server is not running under root';
-should_have 'Game.dll loaded for "Counter-Strike: Global Offensive"' 'srcds_run loaded CSGO';
+# @TODO ENSURE PROPER Game.dll
+should_have 'Game.dll loaded for "Day Of Infamy"' 'srcds_run loaded DOI';
 should_have 'Server is hibernating' 'srcds_run succesfully hibernated';
 should_lack 'map load failed:' 'Server was able to load custom-content the map';
 should_lack 'Your server needs to be restarted in order to receive the latest update.' 'Server is not reporting itself as out of date';

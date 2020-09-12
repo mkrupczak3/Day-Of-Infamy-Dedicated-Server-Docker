@@ -25,9 +25,14 @@ docker run -it --rm t3l3tubie/day-of-infamy-dedicated ./ll-tests/gamesvr-csgo.sh
 
 ### Run Interactive Server
 
+
 ```
-docker run -it --rm --net=host t3l3tubie/day-of-infamy-dedicated ./srcds_run -game csgo +game_type 0 +game_mode 1 -tickrate 128 +map MAPPONAMOHERE_O +sv_lan 1; (Remove that last bit maybe?)
+docker run -it --rm --net=host t3l3tubie/day-of-infamy-dedicated ./srcds_run -game csgo +game_type 0 +game_mode 1 -tickrate 128 +map bastogne +sv_lan 1;
 ```
+
+
+(Remove that last bit maybe?)
+
 
 ## Getting Started with Game Servers in Docker
 
